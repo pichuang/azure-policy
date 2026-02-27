@@ -107,7 +107,7 @@ az policy set-definition show \
 	--query "policyDefinitions" \
 	-o json > "$existing_defs_file"
 
-jq -s '.[0] + .[1] | unique_by(.policyDefinitionId)' \
+jq -s '.[0] + .[1] | unique_by((.policyDefinitionId // "") | ascii_downcase)' \
 	"$existing_defs_file" "$new_defs_file" > "$merged_defs_file"
 
 az policy set-definition update \

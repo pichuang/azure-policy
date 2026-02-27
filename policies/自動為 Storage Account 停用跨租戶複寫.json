@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "displayName": "自動為 Storage Account 停用跨租戶複寫",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "如果 Storage Account 的 allowCrossTenantReplication 未設為 false，此原則將自動修正該值。",
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Storage/storageAccounts"
+          },
+          {
+            "field": "Microsoft.Storage/storageAccounts/allowCrossTenantReplication",
+            "notEquals": false
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Storage/storageAccounts/allowCrossTenantReplication",
+              "value": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}
