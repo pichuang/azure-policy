@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "displayName": "自動啟用虛擬網路加密 (Virtual Network Encryption)",
+    "description": "建立或更新虛擬網路時，自動啟用加密功能，以保護內部流量傳輸。",
+    "mode": "Indexed",
+    "policyType": "Custom",
+    "metadata": {
+        "category": "Network"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/virtualNetworks"
+          },
+          {
+            "field": "Microsoft.Network/virtualNetworks/encryption.enabled",
+            "notEquals": true
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/virtualNetworks/encryption.enabled",
+              "value": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}
