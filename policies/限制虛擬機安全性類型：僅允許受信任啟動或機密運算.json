@@ -1,0 +1,39 @@
+{
+  "properties": {
+    "displayName": "限制虛擬機安全性類型：僅允許受信任啟動或機密運算",
+    "description": "此原則會拒絕安全性類型為 Standard 的虛擬機部署。僅允許使用 Trusted Launch (受信任啟動) 或 Confidential VM (機密虛擬機)，以符合高安全性標準。",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Compute"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType",
+                "exists": false
+              },
+              {
+                "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType",
+                "notIn": [
+                  "TrustedLaunch",
+                  "ConfidentialVM"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

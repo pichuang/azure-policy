@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "displayName": "自動為虛擬機啟用系統指派的受控識別 (System Assigned Managed Identity)",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "此原則會自動為所有虛擬機啟用系統指派的受控識別 (System Assigned Managed Identity)，以確保虛擬機能夠安全地與 Azure 服務進行身份驗證和授權。啟用受控識別後，虛擬機可以使用其自身的身份來存取其他 Azure 資源，而無需管理憑證。",
+    "metadata": {
+      "category": "Compute"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "identity.type",
+            "notContains": "SystemAssigned"
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/9980e01c-031f-40c3-a02e-d06588f73c0d"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "identity.type",
+              "value": "SystemAssigned"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

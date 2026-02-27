@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "displayName": "禁止採用 Spot 等級",
+    "description": "拒絕所有啟用了 Azure 優先等級為 Spot的虛擬機部署，以確保服務的穩定性與可用性。",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Compute"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachines/priority",
+            "equals": "Spot"
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

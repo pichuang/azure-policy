@@ -1,0 +1,55 @@
+{
+  "properties": {
+    "displayName": "自動為虛擬機器擴展集 (VMSS) 啟用主機端加密 (Encryption at host)",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "如果尚未指定，此原則會在建立虛擬機器擴展集 (VMSS) 的過程中，自動幫擴展集內的執行個體啟用主機端加密。這有助於確保您的臨時磁碟和 OS/資料磁碟快取皆能達到端到端的加密保護。",
+    "metadata": {
+      "category": "Compute"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Modify",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachineScaleSets"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.encryptionAtHost",
+            "notEquals": true
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+          ],
+          "conflictEffect": "audit",
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.encryptionAtHost",
+              "value": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}
