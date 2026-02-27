@@ -2,7 +2,7 @@
   "properties": {
     "displayName": "自動為虛擬機器啟用主機端加密 (Encryption at host)",
     "policyType": "Custom",
-    "mode": "Indexed",
+    "mode": "All",
     "description": "如果尚未指定，此原則會在建立虛擬機器的過程中，自動幫虛擬機器啟用主機端加密。這有助於確保您的臨時磁碟和 OS/資料磁碟快取皆能達到端到端的加密保護。",
     "metadata": {
       "category": "Compute"

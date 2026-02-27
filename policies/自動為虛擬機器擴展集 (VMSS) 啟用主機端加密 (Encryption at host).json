@@ -3,7 +3,7 @@
     "displayName": "自動為虛擬機器擴展集 (VMSS) 啟用主機端加密 (Encryption at host)",
     "description": "如果尚未指定，此原則會在建立虛擬機器擴展集 (VMSS) 的過程中，自動幫擴展集內的執行個體啟用主機端加密。這有助於確保您的臨時磁碟和 OS/資料磁碟快取皆能達到端到端的加密保護。",
     "policyType": "Custom",
-    "mode": "Indexed",
+    "mode": "All",
     "metadata": {
       "category": "Compute"
     },

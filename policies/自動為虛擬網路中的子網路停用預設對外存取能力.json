@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "displayName": "自動為虛擬網路中的子網路停用預設對外存取能力",
+    "description": "建立或更新虛擬網路時，會將其子網路的 defaultOutboundAccess 設為 false。這能確保子網路內資源不會獲得預設的網際網路存取權限。",
+    "mode": "All",
+    "policyType": "Custom",
+    "metadata": {
+      "category": "Network"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/virtualNetworks"
+          },
+          {
+            "field": "Microsoft.Network/virtualNetworks/subnets[*].defaultOutboundAccess",
+            "notEquals": false
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          ],
+          "conflictEffect": "audit",
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/virtualNetworks/subnets[*].defaultOutboundAccess",
+              "value": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}

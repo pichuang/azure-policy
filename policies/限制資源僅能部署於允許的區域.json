@@ -1,0 +1,27 @@
+{
+  "properties": {
+    "displayName": "限制資源僅能部署於允許的區域",
+    "description": "強制要求所有資源僅能建立在授權的特定區域中，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範。",
+    "mode": "Indexed",
+    "policyType": "Custom",
+    "metadata": {
+        "category": "General"
+    },
+    "policyRule": {
+      "if": {
+        "field": "location",
+        "notIn": [
+          "japanwest",
+          "japaneast",
+          "westus3",
+          "taiwannorth",
+          "taiwannorthwest",
+          "global"
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}
