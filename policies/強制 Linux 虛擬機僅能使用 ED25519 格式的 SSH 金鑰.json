@@ -1,0 +1,32 @@
+{
+  "properties": {
+    "displayName": "強制 Linux 虛擬機僅能使用 ED25519 格式的 SSH 金鑰",
+    "description": "拒絕使用 RSA 或其他非 ED25519 格式的 SSH 公鑰進行 Linux 虛擬機部署。ED25519 提供基於橢圓曲線的更高安全性與效能，符合高強度密碼學規範。",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Compute"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+            "equals": "Linux"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.ssh.publicKeys[*].keyData",
+            "notLike": "ssh-ed25519*"
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}
