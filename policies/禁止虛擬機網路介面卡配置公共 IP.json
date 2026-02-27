@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "displayName": "禁止虛擬機網路介面卡配置公共 IP",
+    "description": "強制所有虛擬機只能使用私有 IP，確保內部網路不直接暴露於網際網路。",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Network"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/networkInterfaces"
+          },
+          {
+            "field": "Microsoft.Network/networkInterfaces/ipconfigurations[*].publicIpAddress.id",
+            "exists": true
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}
