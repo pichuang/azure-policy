@@ -1,0 +1,87 @@
+{
+  "properties": {
+    "displayName": "自動為 Key Vault 金鑰啟用自動輪轉 (Auto-rotation)",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此政策確保所有 Key Vault 金鑰都啟用了自動輪轉策略，符合 NIST/FedRAMP 90天輪轉規範。系統將透過 DINE 自動補足輪轉策略，確保金鑰的安全性和合規性。",
+    "metadata": {
+      "category": "Key Vault",
+      "version": "2026.02.28",
+      "defaultNonComplianceMessage": "此環境要求金鑰必須符合 NIST/FedRAMP 90天輪轉規範。系統已透過 DINE 自動補足輪轉策略。"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.KeyVault/vaults/keys"
+          },
+          {
+            "field": "Microsoft.KeyVault/vaults/keys/rotationPolicy",
+            "exists": "false"
+          }
+        ]
+      },
+      "then": {
+        "effect": "deployIfNotExists",
+        "details": {
+          "type": "Microsoft.KeyVault/vaults/keys/rotationPolicy",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395"
+          ],
+          "existenceCondition": {
+            "field": "Microsoft.KeyVault/vaults/keys/rotationPolicy",
+            "exists": "true"
+          },
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "vaultName": { "type": "string" },
+                  "keyName": { "type": "string" }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.KeyVault/vaults/keys/rotationPolicy",
+                    "apiVersion": "2021-10-01",
+                    "name": "[concat(parameters('vaultName'), '/', parameters('keyName'), '/default')]",
+                    "properties": {
+                      "attributes": {
+                        "expiryTime": "P90D"
+                      },
+                      "lifetimeActions": [
+                        {
+                          "trigger": {
+                            "timeAfterCreate": "P45D"
+                          },
+                          "action": {
+                            "type": "Rotate"
+                          }
+                        },
+                        {
+                          "trigger": {
+                            "timeBeforeExpiry": "P15D"
+                          },
+                          "action": {
+                            "type": "Notify"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "vaultName": { "value": "[split(field('fullName'), '/')[0]]" },
+                "keyName": { "value": "[field('name')]" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@
     "description": "此原則會自動將網路介面 (NIC) 的加速網路設定為啟用 (true)，以優化網路延遲與吞吐量。",
     "metadata": {
       "category": "Network",
-      "version": "2026.02",
+      "version": "2026.02.28",
       "defaultNonComplianceMessage": "此環境已自動為您的 NIC 啟用加速網路以優化效能，無需手動配置。"
     },
     "policyRule": {

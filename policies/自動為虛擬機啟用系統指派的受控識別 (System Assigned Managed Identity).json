@@ -6,7 +6,7 @@
     "description": "此原則會自動為所有虛擬機啟用系統指派的受控識別 (System Assigned Managed Identity)，以確保虛擬機能夠安全地與 Azure 服務進行身份驗證和授權。啟用受控識別後，虛擬機可以使用其自身的身份來存取其他 Azure 資源，而無需管理憑證。",
     "metadata": {
       "category": "Compute",
-      "version": "2026.02"
+      "version": "2026.02.28"
     },
     "policyRule": {
       "if": {

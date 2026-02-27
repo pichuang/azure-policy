@@ -6,7 +6,7 @@
     "description": "如果 Storage Account 的 allowCrossTenantReplication 未設為 false，此原則將自動修正該值。",
     "metadata": {
       "category": "Storage",
-      "version": "2026.02"
+      "version": "2026.02.28"
     },
     "policyRule": {
       "if": {

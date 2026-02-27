@@ -6,7 +6,7 @@
     "description": "此原則會阻止建立或更新任何將 'allowSharedKeyAccess' 設為 true 的儲存帳戶，強制改用 Entra ID 驗證。",
     "metadata": {
       "category": "Storage",
-      "version": "2026.02"
+      "version": "2026.02.28"
     },
     "policyRule": {
       "if": {
