@@ -5,7 +5,9 @@
     "policyType": "Custom",
     "mode": "Indexed",
     "metadata": {
-      "category": "Network"
+      "category": "Network",
+      "version": "2026.02",
+      "defaultNonComplianceMessage": "虛擬機網路介面卡配置了公共 IP，請移除公共 IP 配置以符合安全要求。"
     },
     "policyRule": {
       "if": {

@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "displayName": "禁止建立 Azure Private DNS Zone",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此原則會阻止在指定的範圍內建立任何 Private DNS Zone，以確保 DNS 區域由中央 IT 統一管理。",
+    "metadata": {
+      "category": "Network",
+      "version": "2026.02",
+      "defaultNonComplianceMessage": "請向中央 IT 團隊申請 Private DNS 紀錄，禁止自行建立 DNS Zone。"
+    },
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.Network/privateDnsZones"
+      },
+      "then": {
+        "effect": "Deny"
+      }
+    }
+  }
+}
