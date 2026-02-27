@@ -5,9 +5,9 @@
     "mode": "Indexed",
     "policyType": "Custom",
     "metadata": {
-        "category": "General",
-        "version": "2026.02",
-        "defaultNonComplianceMessage": "請將資源部署於授權的區域，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範"
+      "category": "General",
+      "version": "2026.02",
+      "defaultNonComplianceMessage": "請將資源部署於授權的區域，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範"
     },
     "policyRule": {
       "if": {

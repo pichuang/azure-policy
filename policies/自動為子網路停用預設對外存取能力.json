@@ -5,7 +5,8 @@
     "mode": "All",
     "policyType": "Custom",
     "metadata": {
-        "category": "Network"
+      "category": "Network",
+      "version": "2026.02"
     },
     "policyRule": {
       "if": {

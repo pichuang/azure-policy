@@ -4,7 +4,9 @@
     "description": "為符合高強度密碼學規範 (如 NIST SP 800-53 Rev. 5, FedRAMP High)，強制 Key Vault 僅能建立硬體安全模組 (HSM) 保護的金鑰。RSA 僅允許 3072 或 4096 位元；EC 僅允許 P-384 或 P-521 曲線。",
     "mode": "All",
     "metadata": {
-      "category": "Security"
+      "category": "Security",
+      "version": "2026.02",
+      "defaultNonComplianceMessage": "Key Vault 金鑰類型與長度不符合安全規範。請確保僅使用 RSA-HSM 類型且長度為 3072 或 4096，或 EC-HSM 類型且曲線為 P-384 或 P-521。優先使用 EC-HSM 以獲得更佳效能與安全性。"
     },
     "policyRule": {
       "if": {

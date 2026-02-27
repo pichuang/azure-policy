@@ -4,6 +4,10 @@
     "policyType": "Custom",
     "mode": "Indexed",
     "description": "強制 Storage Account 的複製範圍僅限 Entra Tenant 或 Private Link。若未設定或設定不符，預設修正為 PrivateLink。",
+    "metadata": {
+      "category": "Storage",
+      "version": "2026.02"
+    },
     "policyRule": {
       "if": {
         "allOf": [

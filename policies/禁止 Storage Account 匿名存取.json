@@ -4,7 +4,10 @@
     "policyType": "Custom",
     "mode": "Indexed",
     "description": "此原則會阻止建立或更新任何將 'allowBlobPublicAccess' 設為 true 的儲存帳戶。",
-    "parameters": {},
+    "metadata": {
+      "category": "Storage",
+      "version": "2026.02"
+    },
     "policyRule": {
       "if": {
         "allOf": [

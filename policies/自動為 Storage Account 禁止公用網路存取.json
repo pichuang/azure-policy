@@ -4,7 +4,10 @@
     "policyType": "Custom",
     "mode": "Indexed",
     "description": "強制將 Storage Account 的公用網路存取設為 Disabled。若建立或更新時未符合，將自動修正。",
-    "parameters": {},
+    "metadata": {
+      "category": "Storage",
+      "version": "2026.02"
+    },
     "policyRule": {
       "if": {
         "allOf": [

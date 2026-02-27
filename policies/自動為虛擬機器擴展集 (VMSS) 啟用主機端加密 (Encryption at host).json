@@ -5,7 +5,8 @@
     "policyType": "Custom",
     "mode": "All",
     "metadata": {
-      "category": "Compute"
+      "category": "Compute",
+      "version": "2026.02"
     },
     "parameters": {
       "effect": {
