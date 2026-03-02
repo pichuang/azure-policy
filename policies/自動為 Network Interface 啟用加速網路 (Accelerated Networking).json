@@ -17,6 +17,10 @@
             "equals": "Microsoft.Network/networkInterfaces"
           },
           {
+            "field": "Microsoft.Network/networkInterfaces/privateEndpoint.id",
+            "exists": false
+          },
+          {
             "field": "Microsoft.Network/networkInterfaces/enableAcceleratedNetworking",
             "notEquals": true
           }
