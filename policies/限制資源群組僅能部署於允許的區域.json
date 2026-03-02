@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "displayName": "限制資源群組僅能部署於允許的區域",
+    "description": "強制要求所有資源群組僅能建立在授權的特定區域中，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範。",
+    "mode": "Indexed",
+    "policyType": "Custom",
+    "metadata": {
+      "category": "General",
+      "version": "2026.02.28",
+      "defaultNonComplianceMessage": "請將資源群組部署於授權的區域，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+          },
+          {
+            "field": "location",
+            "notIn": [
+              "japanwest",
+              "japaneast",
+              "westus3",
+              "taiwannorth",
+              "taiwannorthwest",
+              "global"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

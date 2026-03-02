@@ -1,6 +1,6 @@
 # Azure Policy
 
-## Todo
+## 需要手動加入
 
 - Keys using elliptic curve cryptography should have the specified curve names
   - /providers/Microsoft.Authorization/policyDefinitions/ff25f3c8-b739-4538-9d07-3d6d25cfb255
