@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-POLICY_SET_NAME="${POLICY_SET_NAME:-稻草人原則集}"
+POLICY_SET_NAME="${POLICY_SET_NAME:-虛擬資料中心原則}"
 POLICY_DIR="${POLICY_DIR:-./policies}"
 NAME_PREFIX="${NAME_PREFIX:-scarecrow}"
 MANAGEMENT_GROUP_ID="${MANAGEMENT_GROUP_ID:-}"
