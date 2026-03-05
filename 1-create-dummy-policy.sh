@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-POLICY_NAME="稻草人原則集"
-DISPLAY_NAME="稻草人原則集"
-DESCRIPTION="稻草人原則集，專門進行自動化變更和修復以符合規範"
+POLICY_NAME="虛擬資料中心原則"
+DISPLAY_NAME="虛擬資料中心原則"
+DESCRIPTION="虛擬資料中心原則，專門進行自動化變更和修復以符合規範"
 MANAGEMENT_GROUP_ID="${MANAGEMENT_GROUP_ID:-}"
 INITIATIVE_CATEGORY="${INITIATIVE_CATEGORY:-Regulatory Compliance}"
 
