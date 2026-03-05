@@ -10,3 +10,6 @@
   - /providers/Microsoft.Authorization/policyDefinitions/587c79fe-dd04-4a5e-9d0b-f89598c7261b
 - Not allowed resource types
   - /providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749
+- Add system-assigned managed identity to enable Guest Configuration assignments on virtual machines with no identities
+- Deploy the Windows Guest Configuration extension to enable Guest Configuration assignments
+- Deploy the Linux Guest Configuration extension to enable Guest Configuration assignments on Linux VMs
