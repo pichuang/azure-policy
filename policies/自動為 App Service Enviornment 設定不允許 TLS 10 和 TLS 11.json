@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "displayName": "自動為 App Service Environment 設定不允許 TLS 1.0/1.1",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此原則會自動為 App Service Environment (ASE) 停用 TLS 1.0 和 TLS 1.1，以確保傳輸層安全性符合現代加密標準。",
+    "metadata": {
+      "category": "App Service",
+      "version": "1.0.0",
+      "defaultNonComplianceMessage": "此環境已自動為您的 App Service Environment 停用 TLS 1.0 和 TLS 1.1。"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Web/hostingEnvironments"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "where": {
+                "allOf": [
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].name",
+                    "equals": "DisableTls1.0"
+                  },
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].value",
+                    "equals": "1"
+                  }
+                ]
+              }
+            },
+            "less": 1
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "value": {
+                "name": "DisableTls1.0",
+                "value": "1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

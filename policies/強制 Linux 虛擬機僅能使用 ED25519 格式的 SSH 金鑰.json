@@ -20,6 +20,12 @@
             "equals": "Linux"
           },
           {
+            "count": {
+              "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.ssh.publicKeys[*]"
+            },
+            "greater": 0
+          },
+          {
             "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.ssh.publicKeys[*].keyData",
             "notLike": "ssh-ed25519*"
           }

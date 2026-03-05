@@ -1,0 +1,63 @@
+{
+  "properties": {
+    "displayName": "自動為 App Service Environment 且 Linux 環境設定 FIPS",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此原則會自動為 App Service Environment (ASE) 的 Linux 工作負載啟用 FIPS (Federal Information Processing Standards) 模式，確保加密操作符合 FIPS 140-2 標準。",
+    "metadata": {
+      "category": "App Service",
+      "version": "1.0.0",
+      "defaultNonComplianceMessage": "此環境已自動為您的 App Service Environment 啟用 Linux FIPS 模式，所有加密操作將符合 FIPS 140-2 標準。"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Web/hostingEnvironments"
+          },
+          {
+            "field": "kind",
+            "contains": "linux"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "where": {
+                "allOf": [
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].name",
+                    "equals": "LinuxFipsModeEnabled"
+                  },
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].value",
+                    "equals": "true"
+                  }
+                ]
+              }
+            },
+            "less": 1
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "value": {
+                "name": "LinuxFipsModeEnabled",
+                "value": "true"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

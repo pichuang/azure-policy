@@ -1,0 +1,162 @@
+{
+  "properties": {
+    "displayName": "自動為 App Service Environment 更新 rootCA 憑證",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此原則會透過 Root Cert API 自動為 App Service Environment v3 (ASEv3) 部署指定的 Root CA 憑證。憑證從 Key Vault Secret 中讀取，將在 ASE 中的應用程式啟動時自動注入至信任存放區，支援 Windows 和 Linux 環境。注意：對於已有執行中應用程式的 ASE，新增憑證後需手動停止並啟動 (STOP/START) 應用程式以更新憑證存放區。",
+    "metadata": {
+      "category": "App Service",
+      "version": "3.0.0",
+      "defaultNonComplianceMessage": "此環境已自動為您的 App Service Environment 部署指定的 Root CA 憑證。"
+    },
+    "parameters": {
+      "rootCACertificateName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Root CA 憑證資源名稱",
+          "description": "要建立的 publicCertificates 資源名稱"
+        }
+      },
+      "keyVaultResourceId": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Key Vault 資源識別碼",
+          "description": "存放 Root CA 憑證之 Key Vault 的完整資源識別碼 (例如 /subscriptions/{sub-id}/resourceGroups/{rg}/providers/Microsoft.KeyVault/vaults/{vault-name})"
+        }
+      },
+      "keyVaultSecretName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Key Vault Secret 名稱",
+          "description": "Key Vault 中存放 Root CA 憑證內容 (Base64 編碼) 之 Secret 的名稱"
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.Web/hostingEnvironments"
+      },
+      "then": {
+        "effect": "deployIfNotExists",
+        "details": {
+          "type": "Microsoft.Resources/deployments",
+          "name": "[concat('deploy-rootca-', parameters('rootCACertificateName'))]",
+          "existenceCondition": {
+            "field": "Microsoft.Resources/deployments/mode",
+            "equals": "Incremental"
+          },
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772",
+            "/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6"
+          ],
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "parameters": {
+                "aseName": {
+                  "value": "[field('name')]"
+                },
+                "location": {
+                  "value": "[field('location')]"
+                },
+                "certificateName": {
+                  "value": "[parameters('rootCACertificateName')]"
+                },
+                "keyVaultResourceId": {
+                  "value": "[parameters('keyVaultResourceId')]"
+                },
+                "keyVaultSecretName": {
+                  "value": "[parameters('keyVaultSecretName')]"
+                }
+              },
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "aseName": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "certificateName": {
+                    "type": "string"
+                  },
+                  "keyVaultResourceId": {
+                    "type": "string"
+                  },
+                  "keyVaultSecretName": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.Resources/deployments",
+                    "apiVersion": "2022-09-01",
+                    "name": "[concat('deploy-rootca-', parameters('certificateName'))]",
+                    "properties": {
+                      "mode": "Incremental",
+                      "expressionEvaluationOptions": {
+                        "scope": "inner"
+                      },
+                      "parameters": {
+                        "aseName": {
+                          "value": "[parameters('aseName')]"
+                        },
+                        "location": {
+                          "value": "[parameters('location')]"
+                        },
+                        "certificateName": {
+                          "value": "[parameters('certificateName')]"
+                        },
+                        "certificateBlob": {
+                          "reference": {
+                            "keyVault": {
+                              "id": "[parameters('keyVaultResourceId')]"
+                            },
+                            "secretName": "[parameters('keyVaultSecretName')]"
+                          }
+                        }
+                      },
+                      "template": {
+                        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                        "contentVersion": "1.0.0.0",
+                        "parameters": {
+                          "aseName": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          },
+                          "certificateName": {
+                            "type": "string"
+                          },
+                          "certificateBlob": {
+                            "type": "secureString"
+                          }
+                        },
+                        "resources": [
+                          {
+                            "type": "Microsoft.Web/hostingEnvironments/publicCertificates",
+                            "apiVersion": "2024-11-01",
+                            "name": "[concat(parameters('aseName'), '/', parameters('certificateName'))]",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                              "blob": "[parameters('certificateBlob')]",
+                              "isRoot": true
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

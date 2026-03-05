@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "displayName": "自動為 App Service Environment 設定內部加密 (Internal Encryption)",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "此原則會自動為 App Service Environment (ASE) 啟用內部加密 (Internal Encryption)，確保 ASE 內部前端與後端之間的流量在傳輸過程中受到完整加密保護。",
+    "metadata": {
+      "category": "App Service",
+      "version": "1.0.0",
+      "defaultNonComplianceMessage": "此環境已自動為您的 App Service Environment 啟用內部加密，所有內部流量將受到加密保護。"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Web/hostingEnvironments"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "where": {
+                "allOf": [
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].name",
+                    "equals": "InternalEncryption"
+                  },
+                  {
+                    "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*].value",
+                    "equals": "true"
+                  }
+                ]
+              }
+            },
+            "less": 1
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Web/hostingEnvironments/clusterSettings[*]",
+              "value": {
+                "name": "InternalEncryption",
+                "value": "true"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

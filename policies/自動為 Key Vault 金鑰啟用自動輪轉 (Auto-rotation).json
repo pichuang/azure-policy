@@ -3,11 +3,11 @@
     "displayName": "自動為 Key Vault 金鑰啟用自動輪轉 (Auto-rotation)",
     "policyType": "Custom",
     "mode": "All",
-    "description": "此政策確保所有 Key Vault 金鑰都啟用了自動輪轉策略，符合 NIST/FedRAMP 90天輪轉規範。系統將透過 DINE 自動補足輪轉策略，確保金鑰的安全性和合規性。",
+    "description": "此政策確保所有 Key Vault 金鑰都啟用了自動輪轉策略，符合 NIST/FedRAMP 365 天輪轉規範。系統將透過 DINE 自動補足輪轉策略，確保金鑰的安全性和合規性。",
     "metadata": {
       "category": "Key Vault",
       "version": "1.0.0",
-      "defaultNonComplianceMessage": "此環境要求金鑰必須符合 NIST/FedRAMP 90天輪轉規範。系統已透過 DINE 自動補足輪轉策略。"
+      "defaultNonComplianceMessage": "此環境要求金鑰必須符合 NIST/FedRAMP 365 天輪轉規範。系統已透過 DINE 自動補足輪轉策略。"
     },
     "policyRule": {
       "if": {
@@ -50,12 +50,12 @@
                     "name": "[concat(parameters('vaultName'), '/', parameters('keyName'), '/default')]",
                     "properties": {
                       "attributes": {
-                        "expiryTime": "P90D"
+                        "expiryTime": "P365D"
                       },
                       "lifetimeActions": [
                         {
                           "trigger": {
-                            "timeAfterCreate": "P45D"
+                            "timeAfterCreate": "P180D"
                           },
                           "action": {
                             "type": "Rotate"
@@ -63,7 +63,7 @@
                         },
                         {
                           "trigger": {
-                            "timeBeforeExpiry": "P15D"
+                            "timeBeforeExpiry": "P60D"
                           },
                           "action": {
                             "type": "Notify"
