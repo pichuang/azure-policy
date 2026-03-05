@@ -1,0 +1,108 @@
+{
+  "properties": {
+    "displayName": "自動為 Windows 虛擬機設定 NTP 時間伺服器 (Network Time Protocol)",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "透過 DeployIfNotExists 自動部署 VM Run Command，為 Windows 虛擬機設定 NTP 時間伺服器為 time.windows.com 和 ntp.mil.tw。使用 Windows Time 服務 (w32time) 透過登錄檔設定手動同步來源，確保系統時間同步的準確性與一致性，符合安全稽核與合規要求。",
+    "metadata": {
+      "category": "Compute",
+      "version": "1.0.0"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "啟用或停用本原則的執行"
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      },
+      "ntpServers": {
+        "type": "String",
+        "metadata": {
+          "displayName": "NTP Servers",
+          "description": "NTP 時間伺服器清單，格式為 w32tm manualpeerlist 格式，例如 'time.windows.com,0x1 ntp.mil.tw,0x1'"
+        },
+        "defaultValue": "time.windows.com,0x1 ntp.mil.tw,0x1"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+            "equals": "Windows"
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "type": "Microsoft.Compute/virtualMachines/runCommands",
+          "name": "configureNTP",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+          ],
+          "existenceCondition": {
+            "field": "Microsoft.Compute/virtualMachines/runCommands/provisioningState",
+            "equals": "Succeeded"
+          },
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "vmName": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "ntpServers": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.Compute/virtualMachines/runCommands",
+                    "apiVersion": "2023-03-01",
+                    "name": "[concat(parameters('vmName'), '/configureNTP')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                      "source": {
+                        "script": "[concat('Set-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Services\\W32Time\\Parameters'' -Name ''NtpServer'' -Value ''', parameters('ntpServers'), '''; Set-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Services\\W32Time\\Parameters'' -Name ''Type'' -Value ''NTP''; Set-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Services\\W32Time\\Config'' -Name ''AnnounceFlags'' -Value 5; Restart-Service w32time -Force; w32tm /resync /force')]"
+                      },
+                      "timeoutInSeconds": 120,
+                      "asyncExecution": false
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "vmName": {
+                  "value": "[field('name')]"
+                },
+                "location": {
+                  "value": "[field('location')]"
+                },
+                "ntpServers": {
+                  "value": "[parameters('ntpServers')]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
