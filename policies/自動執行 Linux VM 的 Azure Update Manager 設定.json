@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "displayName": "自動執行 Linux VM 的 Azure Update Manager 設定",
+    "description": "為 Linux VM 啟用定期評估 (AutomaticByPlatform) 並將修補程式協調設定為 ImageDefault，以交由手動或 OS 原生機制管理。",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Security",
+      "version": "1.0.0"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
+            "equals": "Linux"
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+              "value": "AutomaticByPlatform"
+            },
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.patchMode",
+              "value": "ImageDefault"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

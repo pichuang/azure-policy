@@ -6,7 +6,7 @@
     "description": "此政策確保所有 Key Vault 金鑰都啟用了自動輪轉策略，符合 NIST/FedRAMP 90天輪轉規範。系統將透過 DINE 自動補足輪轉策略，確保金鑰的安全性和合規性。",
     "metadata": {
       "category": "Key Vault",
-      "version": "2026.02.28",
+      "version": "1.0.0",
       "defaultNonComplianceMessage": "此環境要求金鑰必須符合 NIST/FedRAMP 90天輪轉規範。系統已透過 DINE 自動補足輪轉策略。"
     },
     "policyRule": {

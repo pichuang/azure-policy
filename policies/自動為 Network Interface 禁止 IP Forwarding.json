@@ -6,7 +6,7 @@
     "description": "此原則會自動將網路介面 (NIC) 的 IP Forwarding 設定為停用 (false)，以符合資安規範並防止非預期的流量轉發。",
     "metadata": {
       "category": "Network",
-      "version": "2026.02.28",
+      "version": "1.0.0",
       "defaultNonComplianceMessage": "基於資安考量，所有 NIC 禁止啟用 IP Forwarding。此設定已由 Policy 自動修正為停用。"
     },
     "policyRule": {

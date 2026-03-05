@@ -6,7 +6,7 @@
     "description": "強制將 Storage Account 的公用網路存取設為 Disabled。若建立或更新時未符合，將自動修正。",
     "metadata": {
       "category": "Storage",
-      "version": "2026.02.28"
+      "version": "1.0.0"
     },
     "policyRule": {
       "if": {

@@ -6,7 +6,7 @@
     "description": "如果儲存帳戶的 allowSharedKeyAccess 未設為 false，此原則將自動修正該值",
     "metadata": {
       "category": "Storage",
-      "version": "2026.02.28"
+      "version": "1.0.0"
     },
     "policyRule": {
       "if": {

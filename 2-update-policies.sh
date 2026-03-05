@@ -25,6 +25,21 @@ if ! az account show >/dev/null 2>&1; then
 	exit 1
 fi
 
+compute_stable_key() {
+	local input="$1"
+
+	if command -v sha256sum >/dev/null 2>&1; then
+		printf '%s' "$input" | sha256sum | awk '{print $1}' | cut -c1-12
+	elif command -v openssl >/dev/null 2>&1; then
+		printf '%s' "$input" | openssl dgst -sha256 | awk '{print $NF}' | cut -c1-12
+	elif command -v cksum >/dev/null 2>&1; then
+		printf '%s' "$input" | cksum | awk '{print $1}'
+	else
+		echo "無法產生穩定雜湊，請安裝 sha256sum 或 openssl。"
+		exit 1
+	fi
+}
+
 if [[ -z "$MANAGEMENT_GROUP_ID" ]]; then
 	MANAGEMENT_GROUP_ID="$(az account show --query tenantId -o tsv)"
 fi
@@ -57,7 +72,7 @@ while IFS= read -r -d '' policy_file; do
 	description="$(jq -r '.properties.description // empty' "$policy_file")"
 	mode="$(jq -r '.properties.mode // "Indexed"' "$policy_file")"
 
-	stable_key="$(printf '%s' "$file_name" | shasum | awk '{print $1}' | cut -c1-12)"
+	stable_key="$(compute_stable_key "$file_name")"
 	policy_name="${NAME_PREFIX}-${stable_key}"
 
 	rule_file="$tmp_dir/${policy_name}-rule.json"
@@ -92,6 +107,7 @@ if [[ "$found_any" == false ]]; then
 fi
 
 existing_defs_file="$tmp_dir/existing-definitions.json"
+preserved_defs_file="$tmp_dir/preserved-definitions.json"
 merged_defs_file="$tmp_dir/merged-definitions.json"
 initiative_metadata_file="$tmp_dir/initiative-metadata.json"
 
@@ -107,8 +123,12 @@ az policy set-definition show \
 	--query "policyDefinitions" \
 	-o json > "$existing_defs_file"
 
+jq --arg prefix "/policyDefinitions/${NAME_PREFIX}-" '
+	map(select(((.policyDefinitionId // "") | ascii_downcase | contains(($prefix | ascii_downcase))) | not))
+' "$existing_defs_file" > "$preserved_defs_file"
+
 jq -s '.[0] + .[1] | unique_by((.policyDefinitionId // "") | ascii_downcase)' \
-	"$existing_defs_file" "$new_defs_file" > "$merged_defs_file"
+	"$preserved_defs_file" "$new_defs_file" > "$merged_defs_file"
 
 az policy set-definition update \
 	--name "$POLICY_SET_NAME" \

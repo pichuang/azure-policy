@@ -6,7 +6,7 @@
     "mode": "Indexed",
     "metadata": {
       "category": "Compute",
-      "version": "2026.02.28",
+      "version": "1.0.0",
       "defaultNonComplianceMessage": "虛擬機安全性類型不符合要求。請確保虛擬機使用受信任啟動 (Trusted Launch) 或機密運算 (Confidential VM) 以符合安全性標準。"
     },
     "policyRule": {

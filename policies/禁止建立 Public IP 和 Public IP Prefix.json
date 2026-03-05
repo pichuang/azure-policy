@@ -6,7 +6,7 @@
     "description": "此原則會阻止在指定的範圍內建立任何公用 IP 地址或公用 IP 前綴，強制所有網路流量必須經由內部網路或中央防火牆。",
     "metadata": {
       "category": "Network",
-      "version": "2026.02.28",
+      "version": "1.0.0",
       "defaultNonComplianceMessage": "基於資安規範，禁止在此環境建立 Public IP。請向中央網管團隊申請透過 Hub 端的 NVA 或 Firewall 進行存取。"
     },
     "policyRule": {
