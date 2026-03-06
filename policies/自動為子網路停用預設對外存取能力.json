@@ -1,7 +1,7 @@
 {
   "properties": {
     "displayName": "自動為子網路停用預設對外存取能力",
-    "description": "建立新的子網路時，自動將 defaultOutboundAccess 設為 false。這能確保子網路內的資源不會獲得預設的網際網路存取權限，以符合高安全性的網路邊界規範。",
+    "description": "建立新的子網路時，自動將 defaultOutboundAccess 設為 false。但若子網路已委派給 Microsoft.Sql/managedInstances，則不會套用此修復。這能確保一般子網路內的資源不會獲得預設的網際網路存取權限，同時保留 Azure SQL Managed Instance 委派需求。",
     "mode": "All",
     "policyType": "Custom",
     "metadata": {
@@ -18,6 +18,16 @@
           {
             "field": "Microsoft.Network/virtualNetworks/subnets/defaultOutboundAccess",
             "notEquals": false
+          },
+          {
+            "count": {
+              "field": "Microsoft.Network/virtualNetworks/subnets/delegations[*]",
+              "where": {
+                "field": "Microsoft.Network/virtualNetworks/subnets/delegations[*].serviceName",
+                "equals": "Microsoft.Sql/managedInstances"
+              }
+            },
+            "equals": 0
           }
         ]
       },
