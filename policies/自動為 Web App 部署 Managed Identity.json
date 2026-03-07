@@ -3,7 +3,7 @@
 		"displayName": "自動為 Web App 部署 Managed Identity",
 		"description": "此原則會自動為 Web App 啟用系統指派的 Managed Identity，讓應用程式可使用受控識別安全地存取其他 Azure 服務而不需自行管理認證。如果 Web App 已設定使用者指派的 Managed Identity，原則會保留既有設定並額外啟用系統指派的 Managed Identity。",
 		"policyType": "Custom",
-		"mode": "Indexed",
+		"mode": "All",
 		"metadata": {
 			"category": "App Service",
 			"version": "1.0.0"
