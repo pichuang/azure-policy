@@ -1,0 +1,29 @@
+{
+	"properties": {
+		"displayName": "禁止 Storage Account 建立 azure-cloud-shell",
+		"policyType": "Custom",
+		"mode": "Indexed",
+		"description": "此原則會阻止建立或更新任何帶有 'ms-resource-usage=azure-cloud-shell' 標籤的 Storage Account，避免使用者建立專供 Azure Cloud Shell 使用的儲存帳戶。",
+		"metadata": {
+			"category": "Storage",
+			"version": "1.0.0"
+		},
+		"policyRule": {
+			"if": {
+				"allOf": [
+					{
+						"field": "type",
+						"equals": "Microsoft.Storage/storageAccounts"
+					},
+					{
+						"field": "tags['ms-resource-usage']",
+						"equals": "azure-cloud-shell"
+					}
+				]
+			},
+			"then": {
+				"effect": "deny"
+			}
+		}
+	}
+}

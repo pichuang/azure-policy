@@ -55,4 +55,4 @@ applyTo: "policies/**/*.json"
 
 ## metadata.category
 
-Compute / Storage / Key Vault / Network / App Service / General
+Compute / Storage / Key Vault / Network / App Service / General / Azure Update Manager / Guest Configuration / Security / Identity / Cost Management / Monitoring / Backup / Disaster Recovery / Other

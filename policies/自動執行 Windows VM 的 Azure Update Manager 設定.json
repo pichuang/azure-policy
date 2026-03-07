@@ -1,10 +1,10 @@
 {
   "properties": {
     "displayName": "自動執行 Windows VM 的 Azure Update Manager 設定",
-    "description": "啟用定期評估 (AutomaticByPlatform) 並將修補程式協調設定為手動 (Manual)，以防止作業系統自動更新。",
+    "description": "啟用定期評估 (AutomaticByPlatform) 並將修補程式協調設定為平台安全部署 (AutomaticByPlatform)，由 Azure Update Manager 依安全部署流程執行更新。",
     "mode": "Indexed",
     "metadata": {
-      "category": "Security",
+      "category": "Azure Update Manager",
       "version": "1.0.0"
     },
     "policyRule": {
@@ -35,7 +35,7 @@
             {
               "operation": "addOrReplace",
               "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.patchMode",
-              "value": "Manual"
+              "value": "AutomaticByPlatform"
             }
           ]
         }

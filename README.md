@@ -19,3 +19,9 @@
 - Add system-assigned managed identity to enable Guest Configuration assignments on virtual machines with no identities
 - Deploy the Windows Guest Configuration extension to enable Guest Configuration assignments
 - Deploy the Linux Guest Configuration extension to enable Guest Configuration assignments on Linux VMs
+
+##
+
+sqlmi vulnerability enabled
+
+改成 safe deployment

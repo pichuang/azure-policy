@@ -4,7 +4,7 @@
     "description": "為 Linux VM 啟用定期評估 (AutomaticByPlatform) 並將修補程式協調設定為 ImageDefault，以交由手動或 OS 原生機制管理。",
     "mode": "Indexed",
     "metadata": {
-      "category": "Security",
+      "category": "Azure Update Manager",
       "version": "1.0.0"
     },
     "policyRule": {

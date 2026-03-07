@@ -1,0 +1,64 @@
+{
+	"properties": {
+		"displayName": "自動為 Log Anlystics Worksapce 部署 Managed Identity",
+		"description": "此原則會自動為 Log Analytics Workspace 啟用系統指派的 Managed Identity，讓工作區可安全地對其他 Azure 服務進行身分驗證，而不需自行管理認證。如果工作區已設定使用者指派的 Managed Identity，原則會保留既有設定並額外啟用系統指派的 Managed Identity。",
+		"policyType": "Custom",
+		"mode": "All",
+		"metadata": {
+			"category": "General",
+			"version": "1.0.0"
+		},
+		"parameters": {
+			"effect": {
+				"type": "String",
+				"metadata": {
+					"displayName": "Effect",
+					"description": "啟用或停用本原則的執行"
+				},
+				"allowedValues": [
+					"Modify",
+					"Disabled"
+				],
+				"defaultValue": "Modify"
+			}
+		},
+		"policyRule": {
+			"if": {
+				"allOf": [
+					{
+						"field": "type",
+						"equals": "Microsoft.OperationalInsights/workspaces"
+					},
+					{
+						"anyOf": [
+							{
+								"field": "identity.type",
+								"exists": "false"
+							},
+							{
+								"field": "identity.type",
+								"equals": "UserAssigned"
+							}
+						]
+					}
+				]
+			},
+			"then": {
+				"effect": "[parameters('effect')]",
+				"details": {
+					"roleDefinitionIds": [
+						"/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+					],
+					"conflictEffect": "audit",
+					"operations": [
+						{
+							"operation": "addOrReplace",
+							"field": "identity.type",
+							"value": "[if(or(equals(field('identity.type'), 'UserAssigned'), equals(field('identity.type'), 'SystemAssigned, UserAssigned')), 'SystemAssigned, UserAssigned', 'SystemAssigned')]"
+						}
+					]
+				}
+			}
+		}
+	}
+}
