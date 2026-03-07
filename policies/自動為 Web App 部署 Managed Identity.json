@@ -47,7 +47,7 @@
 				"effect": "[parameters('effect')]",
 				"details": {
 					"roleDefinitionIds": [
-						"/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+						"/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
 					],
 					"conflictEffect": "audit",
 					"operations": [
