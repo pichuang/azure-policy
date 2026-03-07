@@ -42,10 +42,6 @@
 							{
 								"field": "identity.type",
 								"exists": "false"
-							},
-							{
-								"field": "identity.type",
-								"notContains": "SystemAssigned"
 							}
 						]
 					}
