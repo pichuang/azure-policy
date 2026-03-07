@@ -74,6 +74,7 @@ while IFS= read -r -d '' policy_file; do
 
 	stable_key="$(compute_stable_key "$file_name")"
 	policy_name="${NAME_PREFIX}-${stable_key}"
+	policy_definition_reference_id="$policy_name"
 
 	rule_file="$tmp_dir/${policy_name}-rule.json"
 	params_file="$tmp_dir/${policy_name}-params.json"
@@ -96,7 +97,11 @@ while IFS= read -r -d '' policy_file; do
 		"${scope_args[@]}" \
 		--query id -o tsv)"
 
-	jq --arg id "$policy_id" '. + [{"policyDefinitionId": $id}]' "$new_defs_file" > "$new_defs_file.tmp"
+	jq \
+		--arg id "$policy_id" \
+		--arg referenceId "$policy_definition_reference_id" \
+		'. + [{"policyDefinitionId": $id, "policyDefinitionReferenceId": $referenceId}]' \
+		"$new_defs_file" > "$new_defs_file.tmp"
 	mv "$new_defs_file.tmp" "$new_defs_file"
 
 done < <(find "$POLICY_DIR" -maxdepth 1 -type f -name '*.json' -print0)

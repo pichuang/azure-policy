@@ -1,5 +1,11 @@
 # Azure Policy
 
+## Remediation task 注意事項
+
+- 若 remediation task 對應的 assignment 已被刪除，Azure 入口網站不會顯示該 remediation task。
+- 若 remediation task 是針對 initiative 內的單一 policy 建立，並指定了 policyDefinitionReferenceId，該值必須與 initiative definition 內的 policyDefinitionReferenceId 完全相同。
+- 本 repo 的 2-update-policies.sh 會將每個政策的 policyDefinitionReferenceId 設為穩定的 policy name，也就是 NAME_PREFIX-雜湊值。
+
 ## 需要手動加入
 
 - Keys using elliptic curve cryptography should have the specified curve names

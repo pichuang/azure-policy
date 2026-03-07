@@ -47,7 +47,8 @@ DUMMY_POLICY_ID=$(az policy definition create \
 cat <<EOF > scarecrow-initiative.json
 [
   {
-    "policyDefinitionId": "${DUMMY_POLICY_ID}"
+  "policyDefinitionId": "${DUMMY_POLICY_ID}",
+  "policyDefinitionReferenceId": "DummyScarecrowPolicy"
   }
 ]
 EOF
