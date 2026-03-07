@@ -1,7 +1,7 @@
 {
 	"properties": {
 		"displayName": "自動為 SQL Managed Instance 啟用自動輪換金鑰",
-		"description": "此原則會自動為 SQL Managed Instance 的 Transparent Data Encryption 保護器啟用自動輪換金鑰設定。原則僅會套用在已使用 Azure Key Vault 客戶管理金鑰的 SQL Managed Instance，將 autoRotationEnabled 設為 true，以便在 Key Vault 金鑰版本輪換後自動更新保護器設定，而不會將使用服務管理金鑰的執行個體強制切換為客戶管理金鑰。",
+		"description": "此原則會自動為 SQL Managed Instance 的 Transparent Data Encryption 保護器啟用自動輪換金鑰設定。本原則用 deployIfNotExists 重新部署既有的 encryptionProtector 子資源，保留原本的 Azure Key Vault 金鑰設定並將 autoRotationEnabled 設為 true，而不會將使用服務管理金鑰的執行個體強制切換為客戶管理金鑰。",
 		"policyType": "Custom",
 		"mode": "All",
 		"metadata": {
@@ -16,10 +16,10 @@
 					"description": "啟用或停用本原則的執行"
 				},
 				"allowedValues": [
-					"Modify",
+					"DeployIfNotExists",
 					"Disabled"
 				],
-				"defaultValue": "Modify"
+				"defaultValue": "DeployIfNotExists"
 			}
 		},
 		"policyRule": {
@@ -42,17 +42,54 @@
 			"then": {
 				"effect": "[parameters('effect')]",
 				"details": {
+					"type": "Microsoft.Sql/managedInstances/encryptionProtector",
 					"roleDefinitionIds": [
 						"/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
 					],
-					"conflictEffect": "audit",
-					"operations": [
-						{
-							"operation": "addOrReplace",
-							"field": "Microsoft.Sql/managedInstances/encryptionProtector/autoRotationEnabled",
-							"value": true
+					"existenceCondition": {
+						"allOf": [
+							{
+								"field": "Microsoft.Sql/managedInstances/encryptionProtector/serverKeyType",
+								"equals": "AzureKeyVault"
+							},
+							{
+								"field": "Microsoft.Sql/managedInstances/encryptionProtector/autoRotationEnabled",
+								"equals": true
+							}
+						]
+					},
+					"deployment": {
+						"properties": {
+							"mode": "incremental",
+							"template": {
+								"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+								"contentVersion": "1.0.0.0",
+								"parameters": {
+									"managedInstanceName": {
+										"type": "string"
+									}
+								},
+								"resources": [
+									{
+										"type": "Microsoft.Sql/managedInstances/encryptionProtector",
+										"apiVersion": "2023-08-01",
+										"name": "[concat(parameters('managedInstanceName'), '/current')]",
+										"properties": {
+											"serverKeyType": "[reference(resourceId('Microsoft.Sql/managedInstances/encryptionProtector', parameters('managedInstanceName'), 'current'), '2023-08-01', 'Full').properties.serverKeyType]",
+											"serverKeyName": "[reference(resourceId('Microsoft.Sql/managedInstances/encryptionProtector', parameters('managedInstanceName'), 'current'), '2023-08-01', 'Full').properties.serverKeyName]",
+											"uri": "[reference(resourceId('Microsoft.Sql/managedInstances/encryptionProtector', parameters('managedInstanceName'), 'current'), '2023-08-01', 'Full').properties.uri]",
+											"autoRotationEnabled": true
+										}
+									}
+								]
+							},
+							"parameters": {
+								"managedInstanceName": {
+									"value": "[split(field('fullName'), '/')[0]]"
+								}
+							}
 						}
-					]
+					}
 				}
 			}
 		}
