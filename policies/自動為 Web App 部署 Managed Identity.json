@@ -38,8 +38,16 @@
 						"notContains": "workflowapp"
 					},
 					{
-						"field": "identity.type",
-						"notContains": "SystemAssigned"
+						"anyOf": [
+							{
+								"field": "identity.type",
+								"exists": "false"
+							},
+							{
+								"field": "identity.type",
+								"notContains": "SystemAssigned"
+							}
+						]
 					}
 				]
 			},
