@@ -9,6 +9,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "請將資源部署於授權的區域，以符合資料落地 (Data Residency) 與 Landing Zone 架構規範"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      }
+    },
     "policyRule": {
       "if": {
         "field": "location",
@@ -22,7 +36,7 @@
         ]
       },
       "then": {
-        "effect": "deny"
+        "effect": "[parameters('effect')]"
       }
     }
   }

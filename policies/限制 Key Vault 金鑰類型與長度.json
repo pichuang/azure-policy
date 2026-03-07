@@ -8,6 +8,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "Key Vault 金鑰類型與長度不符合安全規範。請確保僅使用 RSA-HSM 類型且長度為 3072 或 4096，或 EC-HSM 類型且曲線為 P-384 或 P-521。優先使用 EC-HSM 以獲得更佳效能與安全性。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -59,7 +73,7 @@
         ]
       },
       "then": {
-        "effect": "deny"
+        "effect": "[parameters('effect')]"
       }
     }
   }

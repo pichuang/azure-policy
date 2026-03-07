@@ -7,6 +7,20 @@
       "category": "Security",
       "version": "1.0.0"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Modify",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -21,7 +35,7 @@
         ]
       },
       "then": {
-        "effect": "modify",
+        "effect": "[parameters('effect')]",
         "details": {
           "roleDefinitionIds": [
             "/providers/microsoft.authorization/roleDefinitions/f25e0fa2-a7c8-4377-a976-54943a77a395"

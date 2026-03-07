@@ -9,6 +9,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "基於資安考量，所有 NIC 禁止啟用 IP Forwarding。此設定已由 Policy 自動修正為停用。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Modify",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -23,7 +37,7 @@
         ]
       },
       "then": {
-        "effect": "modify",
+        "effect": "[parameters('effect')]",
         "details": {
           "roleDefinitionIds": [
             "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c65974d23b3f"

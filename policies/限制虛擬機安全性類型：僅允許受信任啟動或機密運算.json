@@ -9,6 +9,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "虛擬機安全性類型不符合要求。請確保虛擬機使用受信任啟動 (Trusted Launch) 或機密運算 (Confidential VM) 以符合安全性標準。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -34,7 +48,7 @@
         ]
       },
       "then": {
-        "effect": "deny"
+        "effect": "[parameters('effect')]"
       }
     }
   }

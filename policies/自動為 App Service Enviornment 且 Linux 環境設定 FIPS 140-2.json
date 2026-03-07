@@ -9,6 +9,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "此環境已自動為您的 App Service Environment 啟用 Linux FIPS 模式，所有加密操作將符合 FIPS 140-2 標準。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Modify",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -41,7 +55,7 @@
         ]
       },
       "then": {
-        "effect": "modify",
+        "effect": "[parameters('effect')]",
         "details": {
           "roleDefinitionIds": [
             "/providers/Microsoft.Authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"

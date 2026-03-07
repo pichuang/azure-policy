@@ -9,6 +9,20 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "此環境要求金鑰必須符合 NIST/FedRAMP 365 天輪轉規範。系統已透過 DINE 自動補足輪轉策略。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -23,7 +37,7 @@
         ]
       },
       "then": {
-        "effect": "deployIfNotExists",
+        "effect": "[parameters('effect')]",
         "details": {
           "type": "Microsoft.KeyVault/vaults/keys/rotationPolicy",
           "roleDefinitionIds": [

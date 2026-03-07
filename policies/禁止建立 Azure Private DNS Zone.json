@@ -9,13 +9,27 @@
       "version": "1.0.0",
       "defaultNonComplianceMessage": "請向中央 IT 團隊申請 Private DNS 紀錄，禁止自行建立 DNS Zone。"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      }
+    },
     "policyRule": {
       "if": {
         "field": "type",
         "equals": "Microsoft.Network/privateDnsZones"
       },
       "then": {
-        "effect": "Deny"
+        "effect": "[parameters('effect')]"
       }
     }
   }

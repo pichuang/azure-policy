@@ -8,6 +8,20 @@
       "category": "Compute",
       "version": "1.0.0"
     },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "原則效果",
+          "description": "啟用或停用此原則的執行"
+        },
+        "allowedValues": [
+          "Modify",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      }
+    },
     "policyRule": {
       "if": {
         "allOf": [
@@ -22,7 +36,7 @@
         ]
       },
       "then": {
-        "effect": "modify",
+        "effect": "[parameters('effect')]",
         "details": {
           "roleDefinitionIds": [
             "/providers/microsoft.authorization/roleDefinitions/9980e01c-031f-40c3-a02e-d06588f73c0d"
