@@ -1,6 +1,7 @@
 {
   "properties": {
     "displayName": "自動將 Azure Key Vault 選擇為 Premium",
+    "policyType": "Custom",
     "description": "強制所有新建的 Key Vault 使用 Premium SKU，以支援 HSM (硬體安全模組) 保護的金鑰，符合 NIST 與 FedRAMP 高安全性規範。",
     "mode": "Indexed",
     "metadata": {

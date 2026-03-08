@@ -13,9 +13,8 @@
 
 - `./deploy-policies.sh`：標準部署入口，負責 initiative 建立或更新、單檔驗證串接與 policy definitions 同步。
 - `./validate-policy.sh`：單一 policy 驗證工具，支援本地結構檢查與 Azure smoke test。
-- `./diagnose-policy.sh`：單一 policy 排查工具，檢查 definition、initiative、assignment、compliance 與 remediation 前置狀態。
+- `./diagnose-policy.sh`：單一 policy 排查與 remediation 工具，檢查 definition、initiative、assignment、compliance，並可直接觸發修復流程。
 - `./cleanup-duplicate-policies.sh`：重複 definition 清理工具，分析同 displayName 的重複項目並安全刪除舊版本。
-- `./3-force-remediation.sh`：手動 remediation 工具，針對指定 assignment 或 policy 觸發修復流程。
 
 ## 部署
 
@@ -89,7 +88,8 @@ Azure smoke test：
 - Azure policy definition 是否存在
 - initiative 是否包含對應的 policyDefinitionReferenceId
 - assignment 參數、scope、effect、identity
-- compliance state 與可選 remediation
+- compliance state
+- 可直接執行 remediation，並輪詢結果與 deployment 摘要
 
 範例：
 
@@ -110,6 +110,20 @@ Azure smoke test：
   --management-group <management-group-id> \
   --assignment <assignment-name> \
   --run-remediation
+```
+
+若要限制 remediation 範圍或調整輪詢行為：
+
+```bash
+./diagnose-policy.sh \
+  --policy-file "./policies/自動為 Storage Account 停用匿名存取.json" \
+  --management-group <management-group-id> \
+  --assignment <assignment-name> \
+  --run-remediation \
+  --location-filter japaneast \
+  --resource-discovery-mode ReEvaluateCompliance \
+  --poll-interval 10 \
+  --poll-timeout 1800
 ```
 
 ## 清理

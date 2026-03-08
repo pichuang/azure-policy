@@ -147,7 +147,7 @@ top_level_field="$(json_get_raw '.properties.policyRule.if.field // empty')"
 if [[ -z "$display_name" ]]; then
 	add_error "缺少 properties.displayName"
 elif [[ "$display_name" != "$policy_basename" ]]; then
-	add_error "檔名與 properties.displayName 不一致：檔名為 $policy_basename，displayName 為 $display_name"
+	add_warning "檔名與 properties.displayName 不一致：檔名為 ${policy_basename}，displayName 為 ${display_name}"
 fi
 
 if [[ -z "$description" ]]; then
