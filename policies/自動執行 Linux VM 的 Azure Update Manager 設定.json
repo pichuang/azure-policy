@@ -2,6 +2,7 @@
   "properties": {
     "displayName": "自動執行 Linux VM 的 Azure Update Manager 設定",
     "description": "為 Linux VM 啟用定期評估 (AutomaticByPlatform) 並將修補程式協調設定為 ImageDefault，以交由手動或 OS 原生機制管理。",
+    "policyType": "Custom",
     "mode": "Indexed",
     "metadata": {
       "category": "Azure Update Manager",

@@ -2,51 +2,95 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# shellcheck source=utils/policy-common.sh
+source "$SCRIPT_DIR/utils/policy-common.sh"
+
 POLICY_SET_NAME="${POLICY_SET_NAME:-虛擬資料中心原則}"
-POLICY_DIR="${POLICY_DIR:-./policies}"
+POLICY_DIR="${POLICY_DIR:-$SCRIPT_DIR/policies}"
 NAME_PREFIX="${NAME_PREFIX:-scarecrow}"
 MANAGEMENT_GROUP_ID="${MANAGEMENT_GROUP_ID:-}"
 INITIATIVE_CATEGORY="${INITIATIVE_CATEGORY:-Regulatory Compliance}"
+VALIDATE_SCRIPT="${VALIDATE_SCRIPT:-$SCRIPT_DIR/4-validate-policy.sh}"
+SKIP_VALIDATION="${SKIP_VALIDATION:-false}"
 
-for cmd in az jq; do
-	if ! command -v "$cmd" >/dev/null 2>&1; then
-		echo "找不到必要指令：$cmd"
-		exit 1
-	fi
+usage() {
+	cat <<'EOF'
+用法：
+  ./2-update-policies.sh [options]
+
+可選參數：
+  --policy-set-name         Initiative 名稱，預設為「虛擬資料中心原則」。
+  --policy-dir              Policy JSON 所在資料夾，預設為 ./policies。
+  --name-prefix             自訂 policy definition name 前綴，預設為 scarecrow。
+  --management-group        Management Group 名稱，未提供時預設使用 tenant ID。
+  --initiative-category     Initiative metadata.category，預設為 Regulatory Compliance。
+  --skip-validation         跳過單一 policy 本地驗證。
+  -h, --help                顯示說明。
+
+也可透過環境變數設定：
+  POLICY_SET_NAME, POLICY_DIR, NAME_PREFIX, MANAGEMENT_GROUP_ID, INITIATIVE_CATEGORY, SKIP_VALIDATION
+EOF
+}
+
+parse_args() {
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			--policy-set-name)
+				POLICY_SET_NAME="$2"
+				shift 2
+				;;
+			--policy-dir)
+				POLICY_DIR="$2"
+				shift 2
+				;;
+			--name-prefix)
+				NAME_PREFIX="$2"
+				shift 2
+				;;
+			--management-group)
+				MANAGEMENT_GROUP_ID="$2"
+				shift 2
+				;;
+			--initiative-category)
+				INITIATIVE_CATEGORY="$2"
+				shift 2
+				;;
+			--skip-validation)
+				SKIP_VALIDATION=true
+				shift
+				;;
+			-h|--help)
+				usage
+				exit 0
+				;;
+			*)
+				echo "不支援的參數：$1"
+				usage
+				exit 1
+				;;
+		esac
+	done
+}
+
+parse_args "$@"
+
+for cmd in az jq find sort; do
+	require_command "$cmd"
 done
+
+ensure_azure_login
 
 if [[ ! -d "$POLICY_DIR" ]]; then
 	echo "找不到原則資料夾：$POLICY_DIR"
 	exit 1
 fi
 
-if ! az account show >/dev/null 2>&1; then
-	echo "尚未登入 Azure，請先執行：az login"
-	exit 1
-fi
+MANAGEMENT_GROUP_ID="$(resolve_management_group_id "$MANAGEMENT_GROUP_ID")"
+build_management_group_scope_args "$MANAGEMENT_GROUP_ID"
 
-compute_stable_key() {
-	local input="$1"
-
-	if command -v sha256sum >/dev/null 2>&1; then
-		printf '%s' "$input" | sha256sum | awk '{print $1}' | cut -c1-12
-	elif command -v openssl >/dev/null 2>&1; then
-		printf '%s' "$input" | openssl dgst -sha256 | awk '{print $NF}' | cut -c1-12
-	elif command -v cksum >/dev/null 2>&1; then
-		printf '%s' "$input" | cksum | awk '{print $1}'
-	else
-		echo "無法產生穩定雜湊，請安裝 sha256sum 或 openssl。"
-		exit 1
-	fi
-}
-
-if [[ -z "$MANAGEMENT_GROUP_ID" ]]; then
-	MANAGEMENT_GROUP_ID="$(az account show --query tenantId -o tsv)"
-fi
-
-scope_args=(--management-group "$MANAGEMENT_GROUP_ID")
-
-if ! az policy set-definition show --name "$POLICY_SET_NAME" "${scope_args[@]}" >/dev/null 2>&1; then
+if ! az policy set-definition show --name "$POLICY_SET_NAME" "${MANAGEMENT_GROUP_SCOPE_ARGS[@]}" >/dev/null 2>&1; then
 	echo "找不到原則集：$POLICY_SET_NAME"
 	echo "請先執行 1-create-dummy-policy.sh 建立原則集，或調整 POLICY_SET_NAME。"
 	exit 1
@@ -63,6 +107,10 @@ found_any=false
 while IFS= read -r -d '' policy_file; do
 	found_any=true
 	file_name="$(basename "$policy_file" .json)"
+
+	if [[ "$SKIP_VALIDATION" != "true" ]]; then
+		"$VALIDATE_SCRIPT" --policy-file "$policy_file" --local-only >/dev/null
+	fi
 
 	display_name="$(jq -r '.properties.displayName // empty' "$policy_file")"
 	if [[ -z "$display_name" || "$display_name" == "null" ]]; then
@@ -94,7 +142,7 @@ while IFS= read -r -d '' policy_file; do
 		--rules "$rule_file" \
 		--params "$params_file" \
 		--metadata "$metadata_file" \
-		"${scope_args[@]}" \
+		"${MANAGEMENT_GROUP_SCOPE_ARGS[@]}" \
 		--query id -o tsv)"
 
 	jq \
@@ -104,7 +152,7 @@ while IFS= read -r -d '' policy_file; do
 		"$new_defs_file" > "$new_defs_file.tmp"
 	mv "$new_defs_file.tmp" "$new_defs_file"
 
-done < <(find "$POLICY_DIR" -maxdepth 1 -type f -name '*.json' -print0)
+	done < <(find "$POLICY_DIR" -maxdepth 1 -type f -name '*.json' -print0 | sort -z)
 
 if [[ "$found_any" == false ]]; then
 	echo "在 $POLICY_DIR 找不到任何 .json 原則檔。"
@@ -124,7 +172,7 @@ EOF
 
 az policy set-definition show \
 	--name "$POLICY_SET_NAME" \
-	"${scope_args[@]}" \
+	"${MANAGEMENT_GROUP_SCOPE_ARGS[@]}" \
 	--query "policyDefinitions" \
 	-o json > "$existing_defs_file"
 
@@ -137,7 +185,7 @@ jq -s '.[0] + .[1] | unique_by((.policyDefinitionId // "") | ascii_downcase)' \
 
 az policy set-definition update \
 	--name "$POLICY_SET_NAME" \
-	"${scope_args[@]}" \
+	"${MANAGEMENT_GROUP_SCOPE_ARGS[@]}" \
 	--metadata "$initiative_metadata_file" \
 	--definitions "$merged_defs_file" >/dev/null
 
