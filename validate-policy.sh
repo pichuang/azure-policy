@@ -17,7 +17,7 @@ NAME_PREFIX="${NAME_PREFIX:-policy-validate}"
 usage() {
 	cat <<'EOF'
 用法：
-  ./4-validate-policy.sh --policy-file <path> [options]
+  ./validate-policy.sh --policy-file <path> [options]
 
 必要參數：
   --policy-file             要驗證的單一 policy JSON 檔案。

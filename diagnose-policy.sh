@@ -36,7 +36,7 @@ usage() {
 前置條件：
 	1. 已安裝 Azure CLI 與 jq。
 	2. 已完成 az login。
-	3. 這份 policy 已透過 deploy-policies.sh 或 2-update-policies.sh 部署到 Azure。
+	3. 這份 policy 已透過 deploy-policies.sh 部署到 Azure。
 	4. 若要檢查 assignment 或 remediation，必須提供 --assignment。
 
 必要參數：
@@ -54,7 +54,7 @@ usage() {
   --trigger-scan            先觸發一次 policy state 重新評估。
   --run-remediation         若 assignment 與 referenceId 都可判定，直接呼叫 3-force-remediation.sh。
   --show-raw-json           額外輸出 definition、assignment、policy state 的原始 JSON。
-  --skip-local-validation   跳過 4-validate-policy.sh 本地驗證。
+	--skip-local-validation   跳過 validate-policy.sh 本地驗證。
   -h, --help                顯示說明。
 
 建議使用順序：
@@ -105,7 +105,7 @@ usage() {
 
 輸出判讀：
 	- definitionFound=false：代表 policy definition 尚未部署成功，先重跑 deploy-policies.sh。
-	- referenceFoundInInitiative=false：代表 initiative 內沒有這條 policy，先重跑 2-update-policies.sh。
+	- referenceFoundInInitiative=false：代表 initiative 內沒有這條 policy，先重跑 deploy-policies.sh。
 	- assignmentFound=false：代表 assignment 不存在、scope 不對，或 assignment 名稱輸入錯誤。
 	- effectHint 顯示 Disabled：代表 assignment 已把 policy 關閉，不會作動。
 	- matchingNonCompliantStates > 0：代表條件有命中，但未必已修正完成。
@@ -295,7 +295,7 @@ if [[ -n "$MANAGEMENT_GROUP_ID" && -n "$RESOURCE_GROUP" ]]; then
 fi
 
 if [[ "$SKIP_LOCAL_VALIDATION" != true ]]; then
-	"$SCRIPT_DIR/4-validate-policy.sh" --policy-file "$POLICY_FILE" --local-only
+	"$SCRIPT_DIR/validate-policy.sh" --policy-file "$POLICY_FILE" --local-only
 fi
 
 ensure_azure_login

@@ -173,7 +173,7 @@ deny 政策結構最簡潔，將邏輯集中在 `if` 條件中。
 
 ## 限制
 
-- 不要修改 `1-create-dummy-policy.sh` 或 `2-update-policies.sh`
+- 不要修改 `deploy-policies.sh`
 - 不要修改 `utils/` 目錄下的檔案
 - 不要建立非 Azure Policy JSON 的檔案（除非使用者明確要求）
 - 不要產生 `audit` 作為唯一效果的原則，除非使用者明確要求

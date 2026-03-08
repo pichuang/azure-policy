@@ -1,8 +1,27 @@
 # Azure Policy
 
-## 可重複利用的部署流程
+## 操作順序
 
-建議優先使用 deploy-policies.sh，一次完成 placeholder initiative 建立與所有 policy 更新。
+建議依照以下順序操作：
+
+1. 部署：`./deploy-policies.sh`，建立或更新 initiative 與 policy definitions。
+2. 驗證：`./validate-policy.sh`，先驗證單一 policy 定義是否正確。
+3. 排查：`./diagnose-policy.sh`，檢查 definition、initiative、assignment 與 compliance。
+4. 清理：`./cleanup-duplicate-policies.sh`，清除歷史重複部署且已無引用的 definitions。
+
+## 腳本一覽
+
+- `./deploy-policies.sh`：標準部署入口，負責 initiative 建立或更新、單檔驗證串接與 policy definitions 同步。
+- `./validate-policy.sh`：單一 policy 驗證工具，支援本地結構檢查與 Azure smoke test。
+- `./diagnose-policy.sh`：單一 policy 排查工具，檢查 definition、initiative、assignment、compliance 與 remediation 前置狀態。
+- `./cleanup-duplicate-policies.sh`：重複 definition 清理工具，分析同 displayName 的重複項目並安全刪除舊版本。
+- `./3-force-remediation.sh`：手動 remediation 工具，針對指定 assignment 或 policy 觸發修復流程。
+
+## 部署
+
+腳本：`./deploy-policies.sh`
+
+用途：一次完成 initiative 建立、policy 驗證與 policy definitions 更新，且可重複執行。
 
 ```bash
 ./deploy-policies.sh \
@@ -23,16 +42,22 @@
 - MANAGEMENT_GROUP_ID
 - INITIATIVE_CATEGORY
 
-deploy-policies.sh 內部會先呼叫 1-create-dummy-policy.sh，若 initiative 已存在則繼續執行 2-update-policies.sh，因此同一套腳本可重複執行。
+建議做法：
 
-## 單一 Policy 驗證
+- 新部署使用 `./deploy-policies.sh`。
+- 後續更新同樣使用 `./deploy-policies.sh`。
+- 不需要再分別執行建立 initiative 與更新 policies 的舊腳本。
 
-新增 4-validate-policy.sh，可先在本地驗證單一 policy JSON，再視需要做 Azure smoke test。
+## 驗證
+
+腳本：`./validate-policy.sh`
+
+用途：先在本地驗證單一 policy JSON，再視需要做 Azure smoke test。
 
 本地驗證：
 
 ```bash
-./4-validate-policy.sh \
+./validate-policy.sh \
   --policy-file "./policies/自動為 Storage Account 停用匿名存取.json" \
   --local-only
 ```
@@ -40,7 +65,7 @@ deploy-policies.sh 內部會先呼叫 1-create-dummy-policy.sh，若 initiative 
 Azure smoke test：
 
 ```bash
-./4-validate-policy.sh \
+./validate-policy.sh \
   --policy-file "./policies/自動為 Storage Account 停用匿名存取.json" \
   --azure-smoke-test \
   --management-group <management-group-id>
@@ -54,9 +79,11 @@ Azure smoke test：
 - effect 參數與 then.effect 是否一致
 - Azure smoke test 時，是否能成功建立暫時的 policy definition
 
-## Policy 排查腳本
+## 排查
 
-新增 diagnose-policy.sh，可將手動排查流程整合成單一腳本，依序檢查：
+腳本：`./diagnose-policy.sh`
+
+用途：將手動排查流程整合成單一腳本，依序檢查：
 
 - 本地 policy 結構
 - Azure policy definition 是否存在
@@ -85,9 +112,11 @@ Azure smoke test：
   --run-remediation
 ```
 
-## 重複 Definition 清理腳本
+## 清理
 
-新增 cleanup-duplicate-policies.sh，可協助盤點歷史重複部署的 policy definitions，並只刪除安全可刪的舊 definition。
+腳本：`./cleanup-duplicate-policies.sh`
+
+用途：協助盤點歷史重複部署的 policy definitions，並只刪除安全可刪的舊 definition。
 
 功能包含：
 
@@ -124,7 +153,7 @@ Azure smoke test：
 
 - 若 remediation task 對應的 assignment 已被刪除，Azure 入口網站不會顯示該 remediation task。
 - 若 remediation task 是針對 initiative 內的單一 policy 建立，並指定了 policyDefinitionReferenceId，該值必須與 initiative definition 內的 policyDefinitionReferenceId 完全相同。
-- 本 repo 的 2-update-policies.sh 會將每個政策的 policyDefinitionReferenceId 設為穩定的 policy name，也就是 NAME_PREFIX-雜湊值。
+- 本 repo 的 `./deploy-policies.sh` 會將每個政策的 policyDefinitionReferenceId 設為穩定的 policy name，也就是 NAME_PREFIX-雜湊值。
 
 ## 需要手動加入
 
@@ -139,9 +168,3 @@ Azure smoke test：
 - Add system-assigned managed identity to enable Guest Configuration assignments on virtual machines with no identities
 - Deploy the Windows Guest Configuration extension to enable Guest Configuration assignments
 - Deploy the Linux Guest Configuration extension to enable Guest Configuration assignments on Linux VMs
-
-##
-
-sqlmi vulnerability enabled
-
-改成 safe deployment
